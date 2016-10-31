@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri = "http://java.sun.com/jstl/core_rt"  prefix="c"%>
 <%
 	String path = request.getContextPath();
@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
@@ -27,6 +27,7 @@
     <![endif]-->
 </head>
 <body>
+	 
 	<h2 align ="center">球队列表</h2>
         <hr>
 	<div class="main-content">
@@ -65,10 +66,11 @@
 						<c:forEach items="${teamlist }" var="c">
 							<tr>								
 								<td style="text-align:center;">${c.id }</td>
-								<td style="text-align:center;">${c.title }</td>								
-								<td style="text-align:center;"><a href = "${pageContext.request.contextPath }/nbaget007?op=fenxi&id=${c.id}" target="_blank">${c.player1 }</a></td>
+								<td style="text-align:center;">${c.title }</td>	
+													
+								<td style="text-align:center;"><a href = "${pageContext.request.contextPath }/nbaget007?op=fenxi&name=${c.player1 }"  target="_blank">${c.player1 }</a></td>
 								<td style="text-align:center;">${c.score }</td>
-								<td style="text-align:center;"><a href = "${pageContext.request.contextPath }/nbaget007?op=fenxi&id=${c.id}" target="_blank">${c.player2 }</a></td>
+								<td style="text-align:center;"><a href = "${pageContext.request.contextPath }/nbaget007?op=fenxi&name=${c.player2 }" target="_blank">${c.player2 }</a></td>
 								<td style="text-align:center;">${c.time }</td>																																																			
 							</tr>
 
@@ -98,5 +100,6 @@
 	<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="js/bootstrap.min.js"></script>
+	
 </body>
 </html>

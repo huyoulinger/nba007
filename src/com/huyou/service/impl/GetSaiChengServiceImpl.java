@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.huyou.dao.GetSaiChengDao;
 import com.huyou.dao.impl.GetSaiChengDaoImpl;
+import com.huyou.domain.FenXi;
 import com.huyou.domain.NbaData;
+import com.huyou.domain.TeamMySqlTable;
 import com.huyou.domain.TeamScore;
 import com.huyou.service.GetSaiChengService;
 import com.sun.org.apache.bcel.internal.generic.NEW;
@@ -40,6 +42,18 @@ public class GetSaiChengServiceImpl implements GetSaiChengService {
 	public Boolean updateScore(int id, String score,String status) {
 		// TODO Auto-generated method stub
 		return dao.updateScore(id,score,status);
+	}
+
+	@Override
+	public TeamMySqlTable findTeamByName(String pname) {
+		// TODO Auto-generated method stub
+		return dao.finTeamByName(pname);
+	}
+
+	@Override
+	public List<FenXi> getAllTeamDatas(String tbname) {
+		// TODO Auto-generated method stub
+		return dao.getAllTeamDatas(tbname);
 	}
 		
 

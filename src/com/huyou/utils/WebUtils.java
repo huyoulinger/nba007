@@ -156,9 +156,9 @@ public class WebUtils {
 		}else if ("活塞".equals(mPlayer)) {
 			newName="底特律活塞";
 		}else if ("猛龙".equals(mPlayer)) {
-			newName="印第安纳步行者";
-		}else if ("步行者".equals(mPlayer)) {
 			newName="多伦多猛龙";
+		}else if ("公牛".equals(mPlayer)) {
+			newName="芝加哥公牛";
 		}else if ("黄蜂".equals(mPlayer)) {
 			newName="夏洛特黄蜂";
 		}else if ("雄鹿".equals(mPlayer)) {
@@ -176,7 +176,7 @@ public class WebUtils {
 		}else if ("国王".equals(mPlayer)) {
 			newName="萨克拉门托国王";
 		}else if ("太阳".equals(mPlayer)) {
-			newName="印第安纳步行者";
+			newName="菲尼克斯太阳";
 		}else if ("火箭".equals(mPlayer)) {
 			newName="休斯顿火箭";
 		}else if ("湖人".equals(mPlayer)) {
@@ -186,7 +186,7 @@ public class WebUtils {
 		}else if ("马刺".equals(mPlayer)) {
 			newName="圣安东尼奥马刺";
 		}else if ("开拓者".equals(mPlayer)) {
-			newName="洛杉矶湖人";
+			newName="波特兰开拓者";
 		}else if ("勇士".equals(mPlayer)) {
 			newName="金州勇士";
 		}else if ("爵士".equals(mPlayer)) {

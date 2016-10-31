@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.huyou.dao.GetSaiChengDao;
+import com.huyou.domain.FenXi;
 import com.huyou.domain.NbaData;
+import com.huyou.domain.TeamMySqlTable;
 import com.huyou.domain.TeamScore;
 import com.huyou.utils.JdbcUtils;
 import com.huyou.utils.WebUtils;
@@ -204,6 +206,109 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 
 		return  n >0 ? true : false;	
 
+	}
+
+	
+	@Override
+	public TeamMySqlTable finTeamByName(String pname) {
+		Connection conn = JdbcUtils.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		
+		TeamMySqlTable t = new TeamMySqlTable();
+		
+		sql = "select * from team_id where name = ?";
+		
+		// 创建预处理命令对象
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pname);
+			// 执行sql语句
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				// 封装数据
+				
+				t.setId(rs.getString("id"));				
+				t.setSaishi(rs.getString("saishi"));
+				t.setName(rs.getString("name"));
+				t.setTbname(rs.getString("tbname"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JdbcUtils.release(rs, pstmt, conn);
+		}
+		return t;
+		
+	}
+
+	
+	@Override
+	public List<FenXi> getAllTeamDatas(String name) {
+		ResultSet rs = null;
+		List<FenXi> list = new ArrayList<FenXi>();
+		// 拿到连接对象
+		Connection conn = JdbcUtils.getConnection();
+		PreparedStatement pstmt = null;
+
+		try {
+			pstmt = conn.prepareStatement("select * from " + name);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				
+				FenXi f = new FenXi();
+
+				String sc = rs.getString("score");
+				
+				
+				String[] scArr = sc.split("-");				
+				
+				int a = Integer.parseInt(scArr[0]);
+				int b = Integer.parseInt(scArr[1]);
+				
+				
+				int total = a + b;
+				
+				String zhujiou;
+				String kejiou;
+				String totaljiou;
+				String banjiou;
+				if (a % 2 == 0) {
+					zhujiou = "偶";
+				} else {
+					zhujiou = "奇";
+				}
+				if (b % 2 == 0) {
+					kejiou = "偶";
+				} else {
+					kejiou = "奇";
+				}
+				if (total % 2 == 0) {
+					totaljiou = "偶";
+				} else {
+					totaljiou = "奇";
+				}				
+								
+				f.setId(rs.getInt("id"));
+				f.setTitle(rs.getString("title"));
+				f.setPlayer1(rs.getString("player1"));
+				f.setPlayer1parity(zhujiou);				
+				f.setScore(rs.getString("score"));
+				f.setPlayer2parity(kejiou);
+				f.setPlayer2(rs.getString("player2"));
+				f.setTotalparity(totaljiou);
+				f.setTime(rs.getString("time"));
+				f.setStatus(rs.getString("status"));
+				list.add(f);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JdbcUtils.release(rs, pstmt, conn);
+		}
+		return list;
 	}
 
 }
