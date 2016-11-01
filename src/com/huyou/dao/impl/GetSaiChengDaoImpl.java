@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,10 +47,10 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 
 				teamList.setId(rs.getInt("id"));
 				teamList.setTitle(rs.getString("title"));
+				teamList.setTime(rs.getTimestamp("time"));
 				teamList.setPlayer1(rs.getString("player1"));
 				teamList.setScore(rs.getString("score"));
 				teamList.setPlayer2(rs.getString("player2"));
-				teamList.setTime(rs.getString("time"));
 				teamList.setStatus(rs.getString("status"));
 				list.add(teamList);
 
@@ -66,7 +67,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 	}
 
 	@Override
-	public boolean findTeamDetail(String player1, String player2, String time) {
+	public boolean findTeamDetail(String player1, String player2, Timestamp time) {
 		ResultSet rs = null;
 		Connection conn = JdbcUtils.getConnection();
 		//Connection conn =null;
@@ -80,7 +81,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 			pstmt = conn.prepareStatement(sqlString);
 			pstmt.setString(1, player1);
 			pstmt.setString(2, player2);
-			pstmt.setString(3, time);
+			pstmt.setTimestamp(3, time);
 
 			rs=pstmt.executeQuery();
 			if (!rs.next()) {
@@ -95,7 +96,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 		}		
 		return a==0 ? true : false;
 	}
-
+	/*
 	@Override
 	public boolean update(String player1, String player2, String title,
 			String time, String score,String status) {
@@ -134,9 +135,9 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 
 		return  n >0 ? true : false;
 	}
-
+	 */
 	@Override
-	public TeamScore findTeamBy(String player1, String player2, String time) {
+	public TeamScore findTeamBy(String player1, String player2, Timestamp time) {
 		ResultSet rs = null;
 		Connection conn = JdbcUtils.getConnection();
 		//Connection conn =null;
@@ -150,7 +151,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 			pstmt = conn.prepareStatement(sqlString);
 			pstmt.setString(1, player1);
 			pstmt.setString(2, player2);
-			pstmt.setString(3, time);
+			pstmt.setTimestamp(3, time);
 
 			rs=pstmt.executeQuery();
 			if (rs.next()) {
@@ -158,10 +159,10 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 
 				teamList.setId(rs.getInt("id"));
 				teamList.setTitle(rs.getString("title"));
+				teamList.setTime(rs.getTimestamp("time"));
 				teamList.setPlayer1(rs.getString("player1"));
 				teamList.setScore(rs.getString("score"));
 				teamList.setPlayer2(rs.getString("player2"));
-				teamList.setTime(rs.getString("time"));
 				teamList.setStatus(rs.getString("status"));
 
 			}
@@ -189,7 +190,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 			pstmt.setString(1, score);
 			pstmt.setString(2, status);
 			pstmt.setInt(3, id);
-			
+
 			n = pstmt.executeUpdate();
 
 			if (n != 0) {
@@ -208,27 +209,30 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 
 	}
 
-	
+
 	@Override
 	public TeamMySqlTable finTeamByName(String pname) {
 		Connection conn = JdbcUtils.getConnection();
+		//Connection conn =null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = null;
-		
+
 		TeamMySqlTable t = new TeamMySqlTable();
-		
+
 		sql = "select * from team_id where name = ?";
-		
+
 		// 创建预处理命令对象
 		try {
+			//Class.forName(driver).newInstance();
+			//conn = DriverManager.getConnection(sql_url,username,password);
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, pname);
 			// 执行sql语句
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				// 封装数据
-				
+
 				t.setId(rs.getString("id"));				
 				t.setSaishi(rs.getString("saishi"));
 				t.setName(rs.getString("name"));
@@ -240,36 +244,40 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 			JdbcUtils.release(rs, pstmt, conn);
 		}
 		return t;
-		
+
 	}
 
-	
+
 	@Override
 	public List<FenXi> getAllTeamDatas(String name) {
-		ResultSet rs = null;
+
 		List<FenXi> list = new ArrayList<FenXi>();
 		// 拿到连接对象
 		Connection conn = JdbcUtils.getConnection();
+		//Connection conn =null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 
 		try {
+			//Class.forName(driver).newInstance();
+			//conn = DriverManager.getConnection(sql_url,username,password);
 			pstmt = conn.prepareStatement("select * from " + name);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
-				
+
 				FenXi f = new FenXi();
 
 				String sc = rs.getString("score");
-				
-				
+
+
 				String[] scArr = sc.split("-");				
-				
+
 				int a = Integer.parseInt(scArr[0]);
 				int b = Integer.parseInt(scArr[1]);
-				
-				
+
+
 				int total = a + b;
-				
+
 				String zhujiou;
 				String kejiou;
 				String totaljiou;
@@ -289,7 +297,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 				} else {
 					totaljiou = "奇";
 				}				
-								
+
 				f.setId(rs.getInt("id"));
 				f.setTitle(rs.getString("title"));
 				f.setPlayer1(rs.getString("player1"));
@@ -298,7 +306,7 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 				f.setPlayer2parity(kejiou);
 				f.setPlayer2(rs.getString("player2"));
 				f.setTotalparity(totaljiou);
-				f.setTime(rs.getString("time"));
+				f.setTime(rs.getTimestamp("time"));
 				f.setStatus(rs.getString("status"));
 				list.add(f);
 
@@ -309,6 +317,108 @@ public class GetSaiChengDaoImpl implements GetSaiChengDao {
 			JdbcUtils.release(rs, pstmt, conn);
 		}
 		return list;
+	}
+
+	@Override
+	public boolean add(TeamScore t) {
+
+		// 拿到连接对象
+		Connection conn = JdbcUtils.getConnection();
+		//Connection conn =null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		sql = "insert into saicheng (title,time,player1,score,player2,status) values(?,?,?,?,?,?)";
+
+		// 创建预处理命令对象
+		int n = 0;
+		try {
+			//Class.forName(driver).newInstance();
+			//conn = DriverManager.getConnection(sql_url,username,password);
+			pstmt = conn.prepareStatement(sql);
+			// 指定?的值
+			pstmt.setString(1, t.getTitle());					
+			pstmt.setTimestamp(2, t.getTime());
+			pstmt.setString(3, t.getPlayer1());
+			pstmt.setString(4, t.getScore());
+			pstmt.setString(5, t.getPlayer2());
+			pstmt.setString(6, t.getStatus());										
+			// 执行sql语句
+			n = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JdbcUtils.release(null, pstmt, conn);
+		}
+		return n > 0 ? true : false;
+	}
+
+	@Override
+	public boolean addMatchPlayer1(TeamScore t, String player1tb) {
+
+		// 拿到连接对象
+		Connection conn = JdbcUtils.getConnection();
+		//Connection conn =null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		sql = "insert into "+player1tb+" (title,time,player1,score,player2,status) values(?,?,?,?,?,?)";
+
+		// 创建预处理命令对象
+		int n = 0;
+		try {
+			//Class.forName(driver).newInstance();
+			//conn = DriverManager.getConnection(sql_url,username,password);
+			pstmt = conn.prepareStatement(sql);
+			// 指定?的值
+			pstmt.setString(1, t.getTitle());					
+			pstmt.setTimestamp(2, t.getTime());
+			pstmt.setString(3, t.getPlayer1());
+			pstmt.setString(4, t.getScore());
+			pstmt.setString(5, t.getPlayer2());
+			pstmt.setString(6, t.getStatus());										
+			// 执行sql语句
+			n = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JdbcUtils.release(null, pstmt, conn);
+		}
+		return n > 0 ? true : false;
+	}
+
+	@Override
+	public boolean addMatchPlayer2(TeamScore t, String player2tb) {
+
+		// 拿到连接对象
+		Connection conn = JdbcUtils.getConnection();
+		//Connection conn =null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		sql = "insert into "+player2tb+" (title,time,player1,score,player2,status) values(?,?,?,?,?,?)";
+
+		// 创建预处理命令对象
+		int n = 0;
+		try {
+			//Class.forName(driver).newInstance();
+			//conn = DriverManager.getConnection(sql_url,username,password);
+			pstmt = conn.prepareStatement(sql);
+			// 指定?的值
+			pstmt.setString(1, t.getTitle());					
+			pstmt.setTimestamp(2, t.getTime());
+			pstmt.setString(3, t.getPlayer1());
+			pstmt.setString(4, t.getScore());
+			pstmt.setString(5, t.getPlayer2());
+			pstmt.setString(6, t.getStatus());										
+			// 执行sql语句
+			n = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JdbcUtils.release(null, pstmt, conn);
+		}
+		return n > 0 ? true : false;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.huyou.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,18 +23,18 @@ import com.huyou.utils.UiUtils;
 import com.huyou.utils.WebUtils;
 
 public class Controller extends HttpServlet {
-	
+
 	private NbaData data;			
 	GetSaiChengService gs = new GetSaiChengServiceImpl();
 	private boolean flag;
 	private Boolean flag1;
-	
+
 	private String single;
 	private String total;
-	
+
 	private List<String> singleList;
 	private List<String> totalList;
-	
+
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -57,19 +58,19 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) throws IOException {
 		String name = request.getParameter("name");
 		String nString = new String(name.getBytes("iso-8859-1"), "UTF-8");
-				
+
 		int m = 1;
 		int n = 1;
-		
+
 
 		singleList = new ArrayList<String>();
 		totalList = new ArrayList<String>();
-		
+
 		ArrayList<Integer> danMax = new ArrayList<Integer>();
 		ArrayList<Integer> totalMax = new ArrayList<Integer>();
-		
 
-		
+
+
 
 		// 获取球队所对应的表名
 		// String name = UiUtils.getTeamBiaoMing(id);
@@ -87,10 +88,10 @@ public class Controller extends HttpServlet {
 				single = list.get(i).getPlayer2parity();
 			}
 			total = list.get(i).getTotalparity();
-			
+
 			singleList.add(single);
 			totalList.add(total);
-			
+
 		}
 		// 正序
 		/*
@@ -129,8 +130,8 @@ public class Controller extends HttpServlet {
 			list.get(i).setTotal(n);
 		}
 
-		
-						
+
+
 		List<Max> max =new ArrayList<Max>();
 		Max ma = new Max();	
 		ma.setDanmax(UiUtils.CalculationMax(danMax));
@@ -158,17 +159,39 @@ public class Controller extends HttpServlet {
 				String mPlayer2=data.result.list.get(i).tr.get(j).player2;
 				String player1 = WebUtils.changName(mPlayer1);
 				String player2 = WebUtils.changName(mPlayer2);				
-				//String title = data.result.list.get(i).title;
+				String title = data.result.list.get(i).title;
 				String score = data.result.list.get(i).tr.get(j).score;
 				String time = data.result.list.get(i).tr.get(j).time;
 				String status =data.result.list.get(i).tr.get(j).status;
+				//拼接成标准时间字符串
+				String mytime = "2016/"+time+":00";
+				String mytime1 = mytime.replace("/", "-");
+				//把时间字符串转换成timestamp格式
+				Timestamp mTimestamp =Timestamp.valueOf(mytime1);
 
 				if ("2".equals(status)) {
-					TeamScore teamScore = gs.findTeamBy(player1,player2,time);					
+					TeamScore teamScore = gs.findTeamBy(player1,player2,mTimestamp);					
 					String statString = teamScore.getStatus();
 					int id = teamScore.getId();
 					if ("0".equals(statString)) {
-						flag1 = gs.updateScore(id,score,status);					
+
+						TeamMySqlTable t1 = gs.findTeamByName(player1);
+						TeamMySqlTable t2 = gs.findTeamByName(player2);
+						String player1tb = t1.getTbname();
+						String player2tb = t2.getTbname();
+
+						TeamScore t = new TeamScore();
+						t.setTitle(title);
+						t.setTime(mTimestamp);
+						t.setPlayer1(player1);
+						t.setScore(score);
+						t.setPlayer2(player2);
+						t.setStatus(status);
+
+
+						boolean flagPlayer1 = gs.addMatchPlayer1(t,player1tb);
+						boolean flagPlayer2 = gs.addMatchPlayer2(t,player2tb);
+						flag1 = gs.updateScore(id,score,status);
 					}
 				}
 			}
@@ -208,15 +231,31 @@ public class Controller extends HttpServlet {
 				//获取其他项
 				String title = data.result.list.get(i).title;
 				String score = data.result.list.get(i).tr.get(j).score;
-				String time = data.result.list.get(i).tr.get(j).time;
+				String time =  data.result.list.get(i).tr.get(j).time;
+				String mytime = "2016/"+time+":00";
+				String mytime1 = mytime.replace("/", "-");
+				Timestamp mTimestamp =Timestamp.valueOf(mytime1);
+
 				String status =data.result.list.get(i).tr.get(j).status;
 				//根据特征码判断比赛是不是未开赛，是就添加
 				if ("0".equals(status)) {
+
+
 					//根据player1,player2,time查询数据是否存在？存在不添加赛程，不存在添加
-					boolean dataExris =gs.findTeamDetail(player1,player2,time);
+					boolean dataExris =gs.findTeamDetail(player1,player2,mTimestamp);
 
 					if (dataExris) {
-						flag = gs.update(player1,player2,title,time,score,status);																		
+
+						TeamScore t = new TeamScore();
+						t.setPlayer1(player1);
+						t.setPlayer2(player2);
+						t.setTitle(title);
+						t.setTime(mTimestamp);
+						t.setScore(score);
+						t.setStatus(status);
+
+						//flag = gs.update(player1,player2,title,time,score,status);
+						flag =gs.add(t);
 					}
 
 				}
@@ -261,7 +300,7 @@ public class Controller extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
-		
+
 	}
 
 }
